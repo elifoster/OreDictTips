@@ -16,11 +16,12 @@ import org.lwjgl.input.Keyboard;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Mod(modid = "oredicttips", name = "OreDictTips", version = "1.0.0", clientSideOnly = true, acceptedMinecraftVersions = "[1.10,1.11.2]")
 public class OreDictTips {
     private ConfigRequirement configRequirement;
-    private KeyBinding key = null;
+    private static KeyBinding key = null;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -44,15 +45,13 @@ public class OreDictTips {
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
 
-        if (configRequirement.requiresKeybind()) {
-            key = new KeyBinding("key.oredicttips.desc", Keyboard.KEY_LSHIFT, "key.oredicttips.category");
-            ClientRegistry.registerKeyBinding(key);
-        }
+        key = new KeyBinding("key.oredicttips.desc", Keyboard.KEY_LSHIFT, "key.oredicttips.category");
+        ClientRegistry.registerKeyBinding(key);
     }
 
     @SubscribeEvent
     public void addOreDictTips(ItemTooltipEvent event) {
-        if (canShowTooltips(event.isShowAdvancedItemTooltips())) {
+        if (configRequirement.canShowTooltips(event.isShowAdvancedItemTooltips())) {
             int[] ids = OreDictionary.getOreIDs(event.getItemStack());
             for (int id : ids) {
                 event.getToolTip().add(" * " + TextFormatting.DARK_GREEN + OreDictionary.getOreName(id));
@@ -60,47 +59,27 @@ public class OreDictTips {
         }
     }
 
-    private boolean canShowTooltips(boolean debug) {
-        if (configRequirement == ConfigRequirement.ALWAYS) {
-            return true;
-        }
-
-        boolean keyBind = true;
-
-        if (configRequirement.requiresKeybind()) {
-            // Cannot use KeyBinding#isKeyDown
-            keyBind = Keyboard.isKeyDown(key.getKeyCode());
-        }
-
-        if (!configRequirement.requiresDebug()) {
-            debug = true;
-        }
-
-        return keyBind && debug;
-    }
-
     private enum ConfigRequirement {
-        ALWAYS("Always show the entries"),
-        DEBUG("Show when the F3+H debug mode is enabled"),
-        KEYBIND("Show when holding a keybind"),
-        DEBUG_KEYBIND("Show when the F3+H debug mode is enabled and holding a keybind");
+        ALWAYS("Always show the entries", (isDebugMode) -> true),
+        DEBUG("Show when the F3+H debug mode is enabled", (isDebugMode) -> isDebugMode),
+        KEYBIND("Show when holding a keybind", (isDebugMode) -> Keyboard.isKeyDown(key.getKeyCode())),
+        DEBUG_KEYBIND("Show when the F3+H debug mode is enabled and holding a keybind",
+          (isDebugMode) -> DEBUG.canShowTooltips(isDebugMode) && KEYBIND.canShowTooltips(isDebugMode));
 
         private final String configurationDescription;
+        private final Predicate<Boolean> canShowTooltipsPredicate;
 
-        ConfigRequirement(String configurationDescription) {
+        ConfigRequirement(String configurationDescription, Predicate<Boolean> canShowTooltipsPredicate) {
             this.configurationDescription = configurationDescription;
+            this.canShowTooltipsPredicate = canShowTooltipsPredicate;
+        }
+
+        private boolean canShowTooltips(boolean isDebugMode) {
+            return canShowTooltipsPredicate.test(isDebugMode);
         }
 
         private String getConfigurationDescription() {
             return configurationDescription;
-        }
-
-        private boolean requiresKeybind() {
-            return this == KEYBIND || this == DEBUG_KEYBIND;
-        }
-
-        private boolean requiresDebug() {
-            return this == DEBUG || this == DEBUG_KEYBIND;
         }
     }
 }
