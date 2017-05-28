@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod(modid = "oredicttips", name = "OreDictTips", version = "1.0.0", clientSideOnly = true)
+@Mod(modid = "oredicttips", name = "OreDictTips", version = "1.0.0", clientSideOnly = true, acceptedMinecraftVersions = "[1.10,1.11.2]")
 public class OreDictTips {
     private ConfigRequirement configRequirement;
     private KeyBinding key = null;
