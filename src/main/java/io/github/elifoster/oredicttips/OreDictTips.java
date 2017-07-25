@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-@Mod(modid = "oredicttips", name = "OreDictTips", version = "1.0.1", clientSideOnly = true, acceptedMinecraftVersions = "[1.10,1.11.2]")
+@Mod(modid = "oredicttips", name = "OreDictTips", version = "1.0.1", clientSideOnly = true)
 public class OreDictTips {
     private ConfigRequirement configRequirement;
     private static KeyBinding key = null;
@@ -51,7 +51,7 @@ public class OreDictTips {
 
     @SubscribeEvent
     public void addOreDictTips(ItemTooltipEvent event) {
-        if (configRequirement.canShowTooltips(event.isShowAdvancedItemTooltips())) {
+        if (configRequirement.canShowTooltips(event.getFlags().isAdvanced())) {
             int[] ids = OreDictionary.getOreIDs(event.getItemStack());
             for (int id : ids) {
                 event.getToolTip().add(" * " + TextFormatting.DARK_GREEN + OreDictionary.getOreName(id));

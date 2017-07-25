@@ -11,8 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
@@ -20,14 +19,14 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.0.1"
 group = "io.github.elifoster.oredicttips"
-archivesBaseName = "OreDictTips-1.10.2"
+archivesBaseName = "OreDictTips-1.12"
 
 targetCompatibility = 1.8
 sourceCompatibility = 1.8
 
 minecraft {
-    version = "1.10.2-12.18.3.2297"
-    mappings = "snapshot_20161026"
+    version = "1.12-14.21.1.2424"
+    mappings = "snapshot_20170725"
     runDir = "run"
     replace "@VERSION@", project.version
 }
