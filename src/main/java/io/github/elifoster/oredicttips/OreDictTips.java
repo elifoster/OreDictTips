@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-@Mod(modid = "oredicttips", name = "OreDictTips", version = "2.0.0", clientSideOnly = true, acceptedMinecraftVersions = "[1.12,1.12.1]")
+@Mod(modid = "oredicttips", name = "OreDictTips", version = "2.0.1", clientSideOnly = true, acceptedMinecraftVersions = "[1.12,1.12.1]")
 public class OreDictTips {
     private ConfigRequirement configRequirement;
     private static KeyBinding key = null;
