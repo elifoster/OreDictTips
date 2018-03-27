@@ -1,6 +1,7 @@
 package io.github.elifoster.oredicttips;
 
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -51,8 +52,9 @@ public class OreDictTips {
 
     @SubscribeEvent
     public void addOreDictTips(ItemTooltipEvent event) {
-        if (configRequirement.canShowTooltips(event.getFlags().isAdvanced())) {
-            int[] ids = OreDictionary.getOreIDs(event.getItemStack());
+        ItemStack stack = event.getItemStack();
+        if (configRequirement.canShowTooltips(event.getFlags().isAdvanced()) && !stack.isEmpty()) {
+            int[] ids = OreDictionary.getOreIDs(stack);
             for (int id : ids) {
                 event.getToolTip().add(" * " + TextFormatting.DARK_GREEN + OreDictionary.getOreName(id));
             }
