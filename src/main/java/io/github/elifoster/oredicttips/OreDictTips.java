@@ -1,6 +1,9 @@
 package io.github.elifoster.oredicttips;
 
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -51,12 +54,31 @@ public class OreDictTips {
 
     @SubscribeEvent
     public void addOreDictTips(ItemTooltipEvent event) {
-        if (configRequirement.canShowTooltips(event.isShowAdvancedItemTooltips())) {
-            int[] ids = OreDictionary.getOreIDs(event.getItemStack());
+        ItemStack stack = event.getItemStack();
+        if (configRequirement.canShowTooltips(event.isShowAdvancedItemTooltips()) && !isEmpty(stack)) {
+            int[] ids = OreDictionary.getOreIDs(stack);
             for (int id : ids) {
                 event.getToolTip().add(" * " + TextFormatting.DARK_GREEN + OreDictionary.getOreName(id));
             }
         }
+    }
+
+    /**
+     * Checks if the ItemStack is "empty," compatible with both Minecraft 1.10 and 1.11 by mimicking the 1.11 isEmpty check.
+     * @param stack The ItemStack to check
+     * @return Whether the ItemStack is null, contains a null Item, or contains Air.
+     */
+    @SuppressWarnings("RedundantIfStatement") // The redundant if statement makes more sense in terms of readability because this is technically code for 2 different MC versions
+    private boolean isEmpty(ItemStack stack) {
+        // 1.10 checks
+        if (stack == null || stack.getItem() == null) {
+            return true;
+        }
+        // 1.11 check, equivalent to ItemStack#isEmpty but still compatible on 1.10
+        if (stack.getItem() == Item.getItemFromBlock(Blocks.AIR)) {
+            return true;
+        }
+        return false;
     }
 
     private enum ConfigRequirement {
